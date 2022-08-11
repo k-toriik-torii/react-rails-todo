@@ -8,11 +8,13 @@ import {
   ListItem,
   ListItemText,
   Input,
+  ListItemSecondaryAction,
 } from '@material-ui/core';
 
 export default function MainContainer ()  {
   const [createissue, setCreateissue] = useState("");
   const [issues, setIssues] = useState([]);
+  const [updateissue, setUpdateissue] = useState("");
 
   const createIssue = (event) => {
     axios.post('http://localhost:3001/issues',
@@ -37,8 +39,22 @@ export default function MainContainer ()  {
     fetchData();
   }, []);
 
+  const updateIssue = (id) => {
+    axios.patch(`http://localhost:3001/issues/${id}`,
+      {
+        name: updateissue
+      }
+    ).then(response => {
+      setIssues(issues.filter(x => x.id !== id))
+    }).catch((e) => { throw e; })
+  }
+
   const resetTextField = () => {
     setCreateissue('')
+  }
+
+  const handleUpdate = (event) => {
+    setUpdateissue(event.target.value)
   }
 
   return (
@@ -70,6 +86,22 @@ export default function MainContainer ()  {
                 ID:[{item.id}]
                 Name:{item.name}
               </ListItemText>
+              <ListItemSecondaryAction>
+                <form>
+                  <Input
+                    type="text"
+                    name="issue"
+                    value={updateissue}
+                    onChange={event => handleUpdate(event)}
+                  />
+                  <Button
+                    type="submit"
+                    onClick={() => updateIssue(item.id)}
+                  >
+                    更新
+                  </Button>
+                </form>
+              </ListItemSecondaryAction>
             </ListItem>
           ))}
         </List>
