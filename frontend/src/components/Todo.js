@@ -9,6 +9,7 @@ import {
   ListItemText,
   Input,
   ListItemSecondaryAction,
+  Checkbox
 } from '@material-ui/core';
 
 export default function MainContainer ()  {
@@ -38,6 +39,13 @@ export default function MainContainer ()  {
     }
     fetchData();
   }, []);
+
+  const deleteIssue = (id) => {
+    axios.delete(`http://localhost:3001/issues/${id}`)
+      .then(response => {
+        setIssues(issues.filter(x => x.id !== id))
+      }).catch((e) => { throw e; })
+  }
 
   const updateIssue = (id) => {
     axios.patch(`http://localhost:3001/issues/${id}`,
@@ -82,6 +90,10 @@ export default function MainContainer ()  {
         >
           {issues.map(item => (
             <ListItem key={item.id} component='li' >
+              <Checkbox
+                value='primary'
+                onChange={() => deleteIssue(item.id)}
+              />
               <ListItemText>
                 ID:[{item.id}]
                 Name:{item.name}
